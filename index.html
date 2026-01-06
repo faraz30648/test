@@ -48,12 +48,20 @@
       height: 100vh;
       z-index: -2;
       background-color: #111;
-      background-position: center center;
-      background-size: cover;
-      background-repeat: no-repeat;
-      will-change: background-image;
     }
 
+    /* --- FIX ADDED HERE --- */
+    /* This styling was previously trapped in the Desktop Media Query */
+    .bg-hero img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover; /* Ensures image covers the full screen */
+      position: absolute;
+      top: 0;
+      left: 0;
+      z-index: 0;
+    }
+    /* ----------------------- */
 
     /* Dark Overlay for Mobile Hero */
     .bg-hero::after {
@@ -413,12 +421,7 @@
         overflow: hidden;
         box-shadow: 0 15px 35px rgba(0,0,0,0.3);
       }
-      .bg-hero img {
-        width: 100%;
-        height: 100%;
-        object-fit: cover;
-        display: block;
-      }
+      
 
       /* Individual Slide */
       .hero-slide {
@@ -643,23 +646,21 @@
        ========================================================= */
     const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxKLHP-2US7maKFEpvQ31IS0TckONdpec4bauv9hzh5cnws2r0tK43lVcv8D5dqmAeA/exec";
 
-    // UPDATED HELPER: SECURE HTTPS LINK CONVERTER
+    // UPDATED HELPER: REQUESTS RESIZED & OPTIMIZED IMAGES
     function convertDriveLink(url) {
         if (!url) return '';
         // If it's not a drive link, return as is
         if (url.indexOf('drive.google.com') === -1) return url; 
         
         // Extract ID
-        var id = '';
         var parts = url.match(/[-\w]{25,}/); 
         if (parts && parts.length > 0) {
-            id = parts[0];
-        } else {
-            return url; // Return original if ID extraction fails
+            var id = parts[0];
+            // Uses https (secure) and =s2500 parameter to limit size to 2500px width/height
+            // This forces Google to compress the image on the fly
+            return `https://lh3.googleusercontent.com/d/${id}=s2500`;
         }
-        
-        // SECURE HTTPS LINK FORMAT
-        return `https://lh3.googleusercontent.com/d/${id}`;
+        return url; 
     }
 
     // MOVED OUTSIDE fetchContent (CRITICAL FIX)
